@@ -16,4 +16,11 @@ class C_PROJECT_API AMonster : public ABaseCharacter
 public:
 
 	AMonster();
+
+protected:
+	virtual void PostInitializeComponents() override;
+
+	virtual void OnChangedHPEvent(class UStatusComponent* statComp) override;
+
+	virtual void BeginPlay() override;
 };

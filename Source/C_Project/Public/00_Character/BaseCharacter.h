@@ -53,6 +53,9 @@ protected:
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
 		class UStatusComponent* StatusComponent;
 
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
+		class UWidgetComponent* HealthBarWidgetComponent;
+
 	UPROPERTY(BlueprintReadOnly)
 		EActionState ActionState;
 

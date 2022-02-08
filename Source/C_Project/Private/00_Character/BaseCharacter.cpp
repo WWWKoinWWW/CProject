@@ -3,6 +3,7 @@
 
 #include "00_Character/BaseCharacter.h"
 #include "00_Character/99_Component/StatusComponent.h"
+#include "Components/WidgetComponent.h"
 
 
 // Sets default values
@@ -12,6 +13,10 @@ ABaseCharacter::ABaseCharacter()
 	PrimaryActorTick.bCanEverTick = true;
 					  //생성자에서만 사용 가능
 	StatusComponent = CreateDefaultSubobject<UStatusComponent>(TEXT("StatusComponent"));
+	HealthBarWidgetComponent = CreateDefaultSubobject< UWidgetComponent>(TEXT("HealthBarWidgetComponent"));
+	HealthBarWidgetComponent->SetupAttachment(RootComponent);
+	HealthBarWidgetComponent->SetWidgetSpace(EWidgetSpace::Screen);
+	HealthBarWidgetComponent->SetDrawSize(FVector2D(200.0f, 30.0f));
 }
 
 // Called when the game starts or when spawned
@@ -38,5 +43,3 @@ float ABaseCharacter::TakeDamage(float DamageAmount, FDamageEvent const& DamageE
 
 	return Super::TakeDamage(DamageAmount, DamageEvent, EventInstigator, DamageCauser);
 }
-
-
