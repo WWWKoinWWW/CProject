@@ -4,10 +4,10 @@
 #include "01_Item/00_Equipable/Weapon_Spawn.h"
 #include "Components/StaticMeshComponent.h"
 #include "NiagaraFunctionLibrary.h"
-
 #include "Kismet/KismetSystemLibrary.h"
-
 #include "Kismet/GameplayStatics.h"
+#include "Particles/ParticleSystemComponent.h"
+#include "00_Character/BaseCharacter.h"
 
 // Sets default values
 AWeapon_Spawn::AWeapon_Spawn()
@@ -16,6 +16,9 @@ AWeapon_Spawn::AWeapon_Spawn()
 	PrimaryActorTick.bCanEverTick = true;
 	EquipmentMeshComponent->SetCollisionProfileName("WeaponPreset");
 	SetActorEnableCollision(false);
+
+	TrailComponent = CreateDefaultSubobject<UParticleSystemComponent>(TEXT("TrailComponent"));
+	TrailComponent->SetupAttachment(RootComponent);
 }
 
 void AWeapon_Spawn::AddUniqueHitActor(AActor* HitActor)
@@ -64,11 +67,12 @@ void AWeapon_Spawn::OnActorBeginOverlapEvent(AActor* OverlappedActor, AActor* Ot
 		{
 			//UGameplayStatics::SpawnEmitterAtLocation(this,HitParticle,Hit.ImpactPoint);
 			UNiagaraFunctionLibrary::SpawnSystemAtLocation(this, HitParticle, Hit.ImpactPoint);
+
+			FPointDamageEvent PointDamageEvent;
+			PointDamageEvent.HitInfo = Hit;
+			
+			OtherActor->TakeDamage(10.f, PointDamageEvent, GetOwner<ABaseCharacter>()->GetController(), this);
 		}
-
-
-
-		OtherActor->TakeDamage(10.f, FDamageEvent(), nullptr, nullptr);
 	}
 }
 

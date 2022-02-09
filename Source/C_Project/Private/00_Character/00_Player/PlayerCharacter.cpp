@@ -81,7 +81,7 @@ APlayerCharacter::APlayerCharacter() {
 
 AWeapon_Spawn* APlayerCharacter::GetWeapon()
 {
-	if(WeaponActorComponent->GetChildActor()==nullptr)
+	if (WeaponActorComponent == nullptr || WeaponActorComponent->GetChildActor() == nullptr)
 	{
 		return nullptr;
 	}
