@@ -13,6 +13,8 @@
 #include "GameFramework/Controller.h"
 #include "GameFramework/SpringArmComponent.h"
 #include "Components/ChildActorComponent.h"
+#include "00_Character/00_Player/02_Component/LockOnComponent.h"
+
 APlayerCharacter::APlayerCharacter() {
 	// Set size for collision capsule
 	GetCapsuleComponent()->InitCapsuleSize(42.f, 96.0f);
@@ -77,6 +79,8 @@ APlayerCharacter::APlayerCharacter() {
 
 	ShieldActorComponent = CreateDefaultSubobject<UChildActorComponent>(TEXT("ShieldActorComponent"));
 	ShieldActorComponent->SetupAttachment(GetMesh(), "hand_lSocket");
+
+	LockOnComponent = CreateDefaultSubobject< ULockOnComponent>(TEXT("LockOnComponent"));
 }
 
 AWeapon_Spawn* APlayerCharacter::GetWeapon()
@@ -147,6 +151,7 @@ void APlayerCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputCom
 	PlayerInputComponent->BindAction("Attack", IE_Pressed, this, &APlayerCharacter::Attack);
 	PlayerInputComponent->BindAction("Attack", IE_Released, this, &APlayerCharacter::StopAttack);
 
+	PlayerInputComponent->BindAction("LockOn", IE_Pressed, this, &APlayerCharacter::LockOn);
 
 
 
@@ -160,9 +165,6 @@ void APlayerCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputCom
 	PlayerInputComponent->BindAxis("TurnRate", this, &APlayerCharacter::TurnAtRate);
 	PlayerInputComponent->BindAxis("LookUp", this, &APawn::AddControllerPitchInput);
 	PlayerInputComponent->BindAxis("LookUpRate", this, &APlayerCharacter::LookUpAtRate);
-
-	
-
 }
 
 
@@ -203,6 +205,11 @@ void APlayerCharacter::Attack()
 void APlayerCharacter::StopAttack()
 {
 	bPressAttack = false;
+}
+
+void APlayerCharacter::LockOn()
+{
+	LockOnComponent->LockOn();
 }
 
 void APlayerCharacter::Run()
@@ -250,3 +257,13 @@ void APlayerCharacter::Jump()
 	}
 }
 
+void APlayerCharacter::PostInitializeComponents()
+{
+	Super::PostInitializeComponents();
+
+	auto weapon = GetWeapon();
+	if (weapon != nullptr)
+	{
+		weapon->SetOwner(this);
+	}
+}

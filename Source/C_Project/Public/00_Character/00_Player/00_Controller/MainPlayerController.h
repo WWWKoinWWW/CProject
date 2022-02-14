@@ -16,9 +16,13 @@ class C_PROJECT_API AMainPlayerController : public APlayerController
 protected:
 	UPROPERTY(EditAnywhere)
 		TSubclassOf<class UMainWidget> MainWidgetObject;
-
 	UPROPERTY()
 		UMainWidget* MainWidget;
+
+	UPROPERTY(EditAnywhere)
+		TSubclassOf<class UUserWidget> LockOnWidgetObject;
+	UPROPERTY()
+		class UUserWidget* LockOnWidget;
 
 	//컨트롤러가 해당 폰에 빙의되는 시점에 호출됨.
 	virtual void OnPossess(APawn* aPawn) override;

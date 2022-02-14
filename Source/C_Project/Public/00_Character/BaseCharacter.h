@@ -56,6 +56,7 @@ protected:
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
 		class UWidgetComponent* HealthBarWidgetComponent;
 
+
 	// TSubclassOf<타입> 특정 클래스를 상속받는 오프젝트만 가져올 수 있음.
 	UPROPERTY(EditAnywhere)
 		TSubclassOf<class UWidgetComponent> DamageTextWidgetComponentObject;

@@ -25,7 +25,18 @@ void AMainPlayerController::OnPossess(APawn* aPawn)
 				player->OnChangedHP.Broadcast(player->GetStatusComponent());
 				player->OnChangedSP.Broadcast(player->GetStatusComponent());
 			}
+
+		}
+
+		if (LockOnWidgetObject != nullptr)
+		{
+			LockOnWidget = CreateWidget<UUserWidget>(this, LockOnWidgetObject);
+			if (LockOnWidget != nullptr)
+			{
+				LockOnWidget->SetDesiredSizeInViewport(FVector2D(50, 50));
+				LockOnWidget->SetVisibility(ESlateVisibility::Hidden);
+				LockOnWidget->AddToViewport();
+			}
 		}
 	}
-	
 }

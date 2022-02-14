@@ -51,6 +51,10 @@ protected:
 		class UChildActorComponent* WeaponActorComponent;
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
 		class UChildActorComponent* ShieldActorComponent;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
+		class ULockOnComponent* LockOnComponent;
+
 public:
 
 	UChildActorComponent* GetWeaponComponent() { return WeaponActorComponent; }
@@ -95,6 +99,8 @@ public:
 	void Attack();
 	void StopAttack();
 
+	void LockOn();
+
 	virtual void SetActionState(EActionState newState) override;
 
 	UPROPERTY(EditAnywhere)
@@ -110,7 +116,7 @@ public:
 	UPROPERTY(EditAnywhere)
 		class UNiagaraSystem* HitParticle;
 
+protected:
+
+	virtual void PostInitializeComponents() override;
 };
-
-
-

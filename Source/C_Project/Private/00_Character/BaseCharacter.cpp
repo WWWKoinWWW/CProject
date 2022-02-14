@@ -4,6 +4,7 @@
 #include "00_Character/BaseCharacter.h"
 #include "00_Character/99_Component/StatusComponent.h"
 #include "Components/WidgetComponent.h"
+#include "98_Widget/99_Common/DamageTextWidget.h"
 
 
 // Sets default values
@@ -39,6 +40,24 @@ float ABaseCharacter::TakeDamage(float DamageAmount, FDamageEvent const& DamageE
 	FHitResult Hit;
 	FVector OutImpulseDir;
 	DamageEvent.GetBestHitInfo(this, DamageCauser, Hit, OutImpulseDir);
+
+	if (DamageTextWidgetComponentObject != nullptr)
+	{
+		UWidgetComponent* widgetComp = NewObject<UWidgetComponent>(this, DamageTextWidgetComponentObject);
+		if (widgetComp != nullptr)
+		{
+			// ★★★ 컴포넌트 동적생성시 반드시 호출 ★★★
+			widgetComp->RegisterComponent();
+			widgetComp->SetWorldLocation(Hit.Location);
+
+			// 위젯 컴포넌트 내부 유저 위젯을 가져와서, 텍스트를 피해량으로 설정.
+			UDamageTextWidget* widget = Cast<UDamageTextWidget>(widgetComp->GetUserWidgetObject());
+			if (widget != nullptr)
+			{
+				widget->SelfDamageText(DamageAmount);
+			}
+		}
+	}
 
 	//1. DamageAmount만큼 체력을 깎음.
 	StatusComponent->AddHP((-1) * DamageAmount);
