@@ -35,8 +35,10 @@ protected:
 		class APlayerCharacter* Player;
 	UPROPERTY()
 		class UCameraComponent* CameraComponent;
-
-	UPROPERTY()
+	
+	UPROPERTY() // 실시간 정렬
+		TArray<AActor*> LockOnableActors_Sort;
+	UPROPERTY() // 정렬 안함
 		TArray<AActor*> LockOnableActors;
 
 	UPROPERTY(EditAnywhere)
@@ -63,6 +65,11 @@ protected:
 	void CameraLookAtTarget();
 
 public:	
+
+	void SetNextLockOnTarket();
+	void SetPreLockOnTarget();
+	void ClearLockOnActors();
+
 	// Called every frame
 	virtual void TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction) override;
 

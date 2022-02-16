@@ -82,6 +82,14 @@ protected:
 	 * @param Rate	This is a normalized rate, i.e. 1.0 means 100% of desired turn rate
 	 */
 	void LookUpAtRate(float Rate);
+
+
+	/*
+	* @brief 마우스 좌 우 입력에 이 함수가 호출 됩니다.
+	* @param
+	*/
+	virtual void AddControllerYawInput(float Val) override;
+
 protected:
 	// APawn interface
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
@@ -113,6 +121,8 @@ public:
 
 
 	bool bPressAttack = false;
+	bool bLockOn = false;
+
 
 protected:
 

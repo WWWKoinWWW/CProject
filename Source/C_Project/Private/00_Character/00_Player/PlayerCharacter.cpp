@@ -138,6 +138,27 @@ void APlayerCharacter::LookUpAtRate(float Rate)
 
 }
 
+void APlayerCharacter::AddControllerYawInput(float Val)
+{
+	if (!bLockOn)
+	{
+		Super::AddControllerYawInput(Val);
+	}
+	else
+	{
+		if (Val > 5.0f)
+		{
+			LockOnComponent->SetNextLockOnTarket();
+		}
+		else if (Val < -5.0f)
+		{
+			LockOnComponent->SetPreLockOnTarget();
+		}
+	}
+
+
+}
+
 void APlayerCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
 {
 	// Set up gameplay key bindings
@@ -163,7 +184,7 @@ void APlayerCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputCom
 	// We have 2 versions of the rotation bindings to handle different kinds of devices differently
 	// "turn" handles devices that provide an absolute delta, such as a mouse.
 	// "turnrate" is for devices that we choose to treat as a rate of change, such as an analog joystick
-	PlayerInputComponent->BindAxis("Turn", this, &APawn::AddControllerYawInput);
+	PlayerInputComponent->BindAxis("Turn", this, &APlayerCharacter::AddControllerYawInput);
 	PlayerInputComponent->BindAxis("TurnRate", this, &APlayerCharacter::TurnAtRate);
 	PlayerInputComponent->BindAxis("LookUp", this, &APawn::AddControllerPitchInput);
 	PlayerInputComponent->BindAxis("LookUpRate", this, &APlayerCharacter::LookUpAtRate);
@@ -173,9 +194,25 @@ void APlayerCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputCom
 }
 
 void APlayerCharacter::LockOn()
-{
-	LockOnComponent->LockOn();
+{	
+	bLockOn = !bLockOn;
 
+	if (bLockOn)
+	{
+		CameraBoom->CameraRotationLagSpeed = 2;
+		CameraBoom->bEnableCameraRotationLag = true;
+
+		LockOnComponent->SetComponentTickEnabled(true);
+		GetCameraBoom()->SetRelativeLocation(FVector(0, 0, 100));
+	}
+	else
+	{
+		CameraBoom->CameraRotationLagSpeed = 10;
+		CameraBoom->bEnableCameraRotationLag = false;
+
+		LockOnComponent->SetComponentTickEnabled(false);
+		GetCameraBoom()->SetRelativeLocation(FVector(0, 0, 0));
+	}
 }
 
 

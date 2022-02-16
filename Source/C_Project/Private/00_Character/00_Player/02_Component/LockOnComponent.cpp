@@ -5,6 +5,7 @@
 
 #include "00_Character/00_Player/PlayerCharacter.h"
 #include "Camera/CameraComponent.h"
+#include "GameFramework/SpringArmComponent.h"
 #include "Kismet/KismetSystemLibrary.h"
 
 // Sets default values for this component's properties
@@ -22,6 +23,8 @@ ULockOnComponent::ULockOnComponent()
 void ULockOnComponent::BeginPlay()
 {
 	Super::BeginPlay();
+
+	SetComponentTickEnabled(false);
 
 	// ...
 	Player = GetOwner<APlayerCharacter>();
@@ -55,17 +58,26 @@ void ULockOnComponent::CreateCameraTrace()
 		//걸린 대상들을 이 컴포넌트에 저장.
 		for (auto i = 0; i < Hits.Num(); i++)
 		{
+			LockOnableActors_Sort.AddUnique(Hits[i].GetActor());
 			LockOnableActors.AddUnique(Hits[i].GetActor());
 		}
 
 		//타겟이 비어있는 경우 타겟을 설정해 줍니다.
 		if(LockOnTarget == nullptr)
 		{
+			// 걸린 대상들 정렬
 			SortLockOnableActors();
-			if (LockOnableActors.IsValidIndex(0)) {
-				LockOnTarget = LockOnableActors[0];
-				OnTargetLockOn.Broadcast(LockOnTarget);
-			}
+			
+			// 가장 가까운 대상을 타겟으로 함
+			LockOnTarget = LockOnableActors_Sort[0];
+			OnTargetLockOn.Broadcast(LockOnTarget);
+		}
+	}
+	else
+	{
+		if (LockOnableActors.Num() == 0)
+		{
+			Player->LockOn();
 		}
 	}
 }
@@ -77,17 +89,73 @@ void ULockOnComponent::SortLockOnableActors()
 		return;
 	}
 
-	LockOnableActors.Sort([this](const AActor& fst, const AActor& sec)
-	{
+	// 거리 오름차순 정렬, 람다식
+	LockOnableActors_Sort.Sort([this](const AActor& fst, const AActor& sec)
+		{
 			return Player->GetDistanceTo(&fst) > Player->GetDistanceTo(&sec);
-	});
-
-
-
+		});
 }
 
 void ULockOnComponent::CameraLookAtTarget()
 {
+	if (LockOnTarget != nullptr)
+	{
+		USpringArmComponent* CameraBoom = Player->GetCameraBoom();
+		/*
+		1. 카메라 붐이 타겟을 바라볼 각도(Rotation)
+		2. 구한 각도로 플레이어 컨트롤러의 로테이션을 변경
+		*/
+		FVector Start = LockOnTarget->GetActorLocation();
+		FVector End = CameraBoom->GetComponentLocation();
+		FRotator Rot = (Start - End).Rotation();
+
+		Player->GetController()->SetControlRotation(Rot);
+	}
+}
+
+void ULockOnComponent::SetNextLockOnTarket()
+{
+	if (LockOnableActors.Num() > 1)
+	{
+		AActor* NextTarget = LockOnableActors[0];
+		LockOnableActors.RemoveAt(0);
+		LockOnableActors.Push(NextTarget);
+
+		if (LockOnTarget == NextTarget)
+		{
+			SetNextLockOnTarket();
+		}
+		else
+		{
+			LockOnTarget = NextTarget;
+			OnTargetLockOn.Broadcast(LockOnTarget);
+		}
+	}
+}
+
+void ULockOnComponent::SetPreLockOnTarget()
+{
+	if (LockOnableActors.Num() > 1)
+	{
+		AActor* PreTarget = LockOnableActors.Pop();
+		LockOnableActors.Push(PreTarget);
+
+		if (LockOnTarget == PreTarget)
+		{
+			SetNextLockOnTarket();
+		}
+		else
+		{
+			LockOnTarget = PreTarget;
+			OnTargetLockOn.Broadcast(LockOnTarget);
+		}
+	}
+}
+
+void ULockOnComponent::ClearLockOnActors()
+{
+	LockOnableActors.Empty();
+	LockOnableActors_Sort.Empty();
 
 }
 
