@@ -15,7 +15,6 @@ public:
 	// Sets default values for this actor's properties
 	AWeapon_Spawn();
 
-
 protected:
 
 	UPROPERTY()
@@ -23,12 +22,9 @@ protected:
 
 	UPROPERTY(VisibleAnywhere)
 		class UParticleSystemComponent* TrailComponent;
-
 public:
-	class UParticleSystemComponent* GetTrailComponent()
-	{
-		return TrailComponent;
-	}
+	class UParticleSystemComponent* GetTrailComponent() { return TrailComponent; }
+
 	//히트된 대상을 저장
 	void AddUniqueHitActor(AActor* HitActor);
 	//이미 히트한 대상인지 확인. 맞으면 참
@@ -50,8 +46,5 @@ public:
 	UPROPERTY(EditAnywhere)
 		class UNiagaraSystem* HitParticle;
 
-	/*
-	UPROPERTY(EditAnywhere)
-		class UParticleSystem* HitParticle;
-		*/
+
 };

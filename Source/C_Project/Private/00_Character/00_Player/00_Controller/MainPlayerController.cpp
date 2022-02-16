@@ -4,7 +4,7 @@
 #include "00_Character/00_Player/00_Controller/MainPlayerController.h"
 #include "98_Widget/00_Player/MainWidget.h"
 #include "00_Character/00_Player/PlayerCharacter.h"
-
+#include "00_Character/00_Player/02_Component/LockOnComponent.h"
 void AMainPlayerController::OnPossess(APawn* aPawn)
 {
 	Super::OnPossess(aPawn);
@@ -24,19 +24,50 @@ void AMainPlayerController::OnPossess(APawn* aPawn)
 
 				player->OnChangedHP.Broadcast(player->GetStatusComponent());
 				player->OnChangedSP.Broadcast(player->GetStatusComponent());
-			}
 
+
+				player->GetLockOnComponent()->OnTargetLockOn.AddUniqueDynamic(this, &AMainPlayerController::OnTargetLockOnEvent);
+				player->GetLockOnComponent()->OnLockOnWigetPosUpdate.AddUniqueDynamic(this, &AMainPlayerController::OnLockOnWigetPosUpdateEvent);
+
+
+			}
 		}
+	}
 
-		if (LockOnWidgetObject != nullptr)
+	if(LockOnWidgetObject!=nullptr)
+	{
+		LockOnWidget = CreateWidget<UUserWidget>(this, LockOnWidgetObject);
+		if(LockOnWidget!=nullptr)
 		{
-			LockOnWidget = CreateWidget<UUserWidget>(this, LockOnWidgetObject);
-			if (LockOnWidget != nullptr)
-			{
-				LockOnWidget->SetDesiredSizeInViewport(FVector2D(50, 50));
-				LockOnWidget->SetVisibility(ESlateVisibility::Hidden);
-				LockOnWidget->AddToViewport();
-			}
+			LockOnWidget->SetDesiredSizeInViewport(FVector2D(50, 50));
+			LockOnWidget->SetVisibility(ESlateVisibility::Hidden);
+			LockOnWidget->AddToViewport();
+		}
+	}
+
+
+}
+
+void AMainPlayerController::OnTargetLockOnEvent(AActor* Target)
+{
+	if (Target != nullptr) {
+
+		FVector2D ScreenPos;
+		if (ProjectWorldLocationToScreen(Target->GetActorLocation(), ScreenPos)) {
+
+			LockOnWidget->SetPositionInViewport(ScreenPos);
+			LockOnWidget->SetVisibility(ESlateVisibility::Visible);
+		}
+	}
+}
+
+void AMainPlayerController::OnLockOnWigetPosUpdateEvent(AActor* Target)
+{
+	if (Target != nullptr) {
+
+		FVector2D ScreenPos;
+		if (ProjectWorldLocationToScreen(Target->GetActorLocation(), ScreenPos)) {
+			LockOnWidget->SetPositionInViewport(ScreenPos);
 		}
 	}
 }

@@ -4,10 +4,13 @@
 #include "01_Item/00_Equipable/Weapon_Spawn.h"
 #include "Components/StaticMeshComponent.h"
 #include "NiagaraFunctionLibrary.h"
-#include "Kismet/KismetSystemLibrary.h"
-#include "Kismet/GameplayStatics.h"
-#include "Particles/ParticleSystemComponent.h"
 #include "00_Character/BaseCharacter.h"
+
+#include "Kismet/KismetSystemLibrary.h"
+
+#include "Kismet/GameplayStatics.h"
+
+#include "Particles/ParticleSystemComponent.h"
 
 // Sets default values
 AWeapon_Spawn::AWeapon_Spawn()
@@ -19,6 +22,8 @@ AWeapon_Spawn::AWeapon_Spawn()
 
 	TrailComponent = CreateDefaultSubobject<UParticleSystemComponent>(TEXT("TrailComponent"));
 	TrailComponent->SetupAttachment(RootComponent);
+
+
 }
 
 void AWeapon_Spawn::AddUniqueHitActor(AActor* HitActor)
@@ -40,7 +45,7 @@ void AWeapon_Spawn::ClearHitActors()
 void AWeapon_Spawn::BeginPlay()
 {
 	Super::BeginPlay();
-	
+
 }
 
 void AWeapon_Spawn::PostInitializeComponents()
@@ -48,6 +53,8 @@ void AWeapon_Spawn::PostInitializeComponents()
 	Super::PostInitializeComponents();
 
 	OnActorBeginOverlap.AddUniqueDynamic(this, &AWeapon_Spawn::OnActorBeginOverlapEvent);
+
+	
 }
 
 void AWeapon_Spawn::OnActorBeginOverlapEvent(AActor* OverlappedActor, AActor* OtherActor)
@@ -70,9 +77,15 @@ void AWeapon_Spawn::OnActorBeginOverlapEvent(AActor* OverlappedActor, AActor* Ot
 
 			FPointDamageEvent PointDamageEvent;
 			PointDamageEvent.HitInfo = Hit;
-			
-			OtherActor->TakeDamage(10.f, PointDamageEvent, GetOwner<ABaseCharacter>()->GetController(), this);
+
+			OtherActor->TakeDamage(10.f, 
+				PointDamageEvent, 
+				GetOwner<ABaseCharacter>()->GetController(), 
+				this);
 		}
+
+
+
 	}
 }
 

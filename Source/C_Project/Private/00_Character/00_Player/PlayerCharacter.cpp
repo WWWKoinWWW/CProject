@@ -80,12 +80,14 @@ APlayerCharacter::APlayerCharacter() {
 	ShieldActorComponent = CreateDefaultSubobject<UChildActorComponent>(TEXT("ShieldActorComponent"));
 	ShieldActorComponent->SetupAttachment(GetMesh(), "hand_lSocket");
 
-	LockOnComponent = CreateDefaultSubobject< ULockOnComponent>(TEXT("LockOnComponent"));
+	LockOnComponent = CreateDefaultSubobject<ULockOnComponent>(TEXT("LockOnComponent"));
+
 }
+
 
 AWeapon_Spawn* APlayerCharacter::GetWeapon()
 {
-	if (WeaponActorComponent == nullptr || WeaponActorComponent->GetChildActor() == nullptr)
+	if(WeaponActorComponent == nullptr || WeaponActorComponent->GetChildActor()== nullptr)
 	{
 		return nullptr;
 	}
@@ -165,7 +167,17 @@ void APlayerCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputCom
 	PlayerInputComponent->BindAxis("TurnRate", this, &APlayerCharacter::TurnAtRate);
 	PlayerInputComponent->BindAxis("LookUp", this, &APawn::AddControllerPitchInput);
 	PlayerInputComponent->BindAxis("LookUpRate", this, &APlayerCharacter::LookUpAtRate);
+
+	
+
 }
+
+void APlayerCharacter::LockOn()
+{
+	LockOnComponent->LockOn();
+
+}
+
 
 
 void APlayerCharacter::StopRun()
@@ -196,8 +208,8 @@ void APlayerCharacter::Attack()
 		return;
 	}
 
-	if (ActionState != EActionState::ATTACK && StatusComponent->CheckSP(10.f)) {
-		StatusComponent->AddSP(-10.f);
+	if (ActionState != EActionState::ATTACK && StatusComponent->CheckSP(25.f)) {
+		StatusComponent->AddSP(-25.f);
 		SetActionState(EActionState::ATTACK);
 	}
 }
@@ -205,11 +217,6 @@ void APlayerCharacter::Attack()
 void APlayerCharacter::StopAttack()
 {
 	bPressAttack = false;
-}
-
-void APlayerCharacter::LockOn()
-{
-	LockOnComponent->LockOn();
 }
 
 void APlayerCharacter::Run()
@@ -262,8 +269,9 @@ void APlayerCharacter::PostInitializeComponents()
 	Super::PostInitializeComponents();
 
 	auto weapon = GetWeapon();
-	if (weapon != nullptr)
+	if(weapon!=nullptr)
 	{
 		weapon->SetOwner(this);
 	}
 }
+

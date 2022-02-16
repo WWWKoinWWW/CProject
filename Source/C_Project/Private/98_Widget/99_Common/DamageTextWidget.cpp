@@ -4,7 +4,7 @@
 #include "98_Widget/99_Common/DamageTextWidget.h"
 #include "Components/TextBlock.h"
 
-void UDamageTextWidget::SelfDamageText(const float Damage)
+void UDamageTextWidget::SetDamageText(const float Damage)
 {
 	TextBlock_Damage->SetText(FText::AsNumber(Damage));
 }

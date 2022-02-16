@@ -2,11 +2,12 @@
 
 
 #include "98_Widget/99_Common/HealthBarWidget.h"
+
 #include "00_Character/99_Component/StatusComponent.h"
 #include "Components/ProgressBar.h"
 
-void UHealthBarWidget::SetHpPercent(UStatusComponent* statComp)
+void UHealthBarWidget::SetHPPercent(UStatusComponent* statComp)
 {
-	float per = statComp->GetHP() / statComp->GetMaxHP();
-	ProgressBar_HP->SetPercent(per);
+	float p = statComp->GetHP() / statComp->GetMaxHP();
+	ProgressBar_HP->SetPercent(p);
 }

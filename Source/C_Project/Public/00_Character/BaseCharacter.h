@@ -56,8 +56,7 @@ protected:
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
 		class UWidgetComponent* HealthBarWidgetComponent;
 
-
-	// TSubclassOf<타입> 특정 클래스를 상속받는 오프젝트만 가져올 수 있음.
+	//TSubclassOf : 특정 클래스를 상속받은 오브젝트만 가져올 수 있음.
 	UPROPERTY(EditAnywhere)
 		TSubclassOf<class UWidgetComponent> DamageTextWidgetComponentObject;
 
@@ -83,4 +82,7 @@ public:
 	 * @return 최종피해량
 	 */
 	virtual float TakeDamage(float DamageAmount, struct FDamageEvent const& DamageEvent, class AController* EventInstigator, AActor* DamageCauser) override;
+
+
+
 };

@@ -2,9 +2,10 @@
 
 
 #include "00_Character/00_Player/02_Component/LockOnComponent.h"
-#include "Kismet/KismetSystemLibrary.h"
-#include "Camera/CameraComponent.h"
+
 #include "00_Character/00_Player/PlayerCharacter.h"
+#include "Camera/CameraComponent.h"
+#include "Kismet/KismetSystemLibrary.h"
 
 // Sets default values for this component's properties
 ULockOnComponent::ULockOnComponent()
@@ -23,8 +24,73 @@ void ULockOnComponent::BeginPlay()
 	Super::BeginPlay();
 
 	// ...
+	Player = GetOwner<APlayerCharacter>();
+	if(Player!=nullptr)
+	{
+		CameraComponent = Player->GetFollowCamera();
+	}
 	
 }
+
+
+void ULockOnComponent::CreateCameraTrace()
+{
+	TArray<FHitResult> Hits;
+	FVector EndPoint = (CameraComponent->GetForwardVector() * LockOnDistance) + CameraComponent->GetComponentLocation();
+
+
+	TArray<TEnumAsByte<EObjectTypeQuery>> ObjectType;
+	ObjectType.Emplace(UEngineTypes::ConvertToObjectType(ECC_GameTraceChannel1));
+
+	if (UKismetSystemLibrary::SphereTraceMultiForObjects(this,
+		CameraComponent->GetComponentLocation(),
+		EndPoint,
+		Radius,
+		ObjectType,
+		false,
+		TArray<AActor*>(),
+		EDrawDebugTrace::ForOneFrame, Hits, true))
+	{
+
+		//걸린 대상들을 이 컴포넌트에 저장.
+		for (auto i = 0; i < Hits.Num(); i++)
+		{
+			LockOnableActors.AddUnique(Hits[i].GetActor());
+		}
+
+		//타겟이 비어있는 경우 타겟을 설정해 줍니다.
+		if(LockOnTarget == nullptr)
+		{
+			SortLockOnableActors();
+			if (LockOnableActors.IsValidIndex(0)) {
+				LockOnTarget = LockOnableActors[0];
+				OnTargetLockOn.Broadcast(LockOnTarget);
+			}
+		}
+	}
+}
+
+void ULockOnComponent::SortLockOnableActors()
+{
+	if(Player == nullptr)
+	{
+		return;
+	}
+
+	LockOnableActors.Sort([this](const AActor& fst, const AActor& sec)
+	{
+			return Player->GetDistanceTo(&fst) > Player->GetDistanceTo(&sec);
+	});
+
+
+
+}
+
+void ULockOnComponent::CameraLookAtTarget()
+{
+
+}
+
 
 
 // Called every frame
@@ -33,20 +99,18 @@ void ULockOnComponent::TickComponent(float DeltaTime, ELevelTick TickType, FActo
 	Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
 
 	// ...
+
+	//1.카메라 트레이스로 대상들을 가져옴.
+	CreateCameraTrace();
+	//2.대상들을 정렬함.
+	SortLockOnableActors();
+	//3.카메라로 바라봄
+	CameraLookAtTarget();
+	//4.락온 위젯의 위치를 업데이트 함.
+	OnLockOnWigetPosUpdate.Broadcast(LockOnTarget);
 }
 
 void ULockOnComponent::LockOn()
 {
-	UCameraComponent* camera;
-	camera = GetOwner<APlayerCharacter>()->GetFollowCamera();
-	FVector EndPoint = (camera->GetForwardVector() * 100.0f) + camera->GetComponentLocation();
 
-	UKismetSystemLibrary::SphereTraceMulti(camera, camera->GetComponentLocation(), EndPoint);
-
-
-	// 카메라 앞 방향 백터
-	// n거리만큼 좌표
-	// 카메라 앞 방향으로 n만큼의 거리까지 트레이스
-	// 트레이스에 걸린 대상을 저장
-	// 트레이스에 걸린 대상들 중 가장 가까운 대상을 타겟으로 저장
 }

@@ -17,8 +17,7 @@ protected:
 
 	UPROPERTY()
 		class UProgressBar* ProgressBar_HP;
-
 public:
-	UFUNCTION()
-		void SetHpPercent(class UStatusComponent* statComp);
+
+	void SetHPPercent(class UStatusComponent* statComp);
 };

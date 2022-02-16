@@ -19,6 +19,7 @@ protected:
 	UPROPERTY()
 		UMainWidget* MainWidget;
 
+
 	UPROPERTY(EditAnywhere)
 		TSubclassOf<class UUserWidget> LockOnWidgetObject;
 	UPROPERTY()
@@ -26,6 +27,17 @@ protected:
 
 	//컨트롤러가 해당 폰에 빙의되는 시점에 호출됨.
 	virtual void OnPossess(APawn* aPawn) override;
+
+	/// <summary>
+	/// 특정 대상이 락온되었을때 호출되는 함수입니다.
+	/// </summary>
+	UFUNCTION()
+		void OnTargetLockOnEvent(AActor* Target);
+	/// <summary>
+	/// 타겟의 위치로 위젯의 위치를 업데이트 합니다.
+	/// </summary>
+	UFUNCTION()
+		void OnLockOnWigetPosUpdateEvent(AActor* Target);
 public:
 	UMainWidget* GetMainWidget() { return MainWidget; }
 };

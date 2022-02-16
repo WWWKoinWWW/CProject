@@ -13,7 +13,6 @@ UCLASS()
 class C_PROJECT_API UFootStepNotify : public UAnimNotify
 {
 	GENERATED_BODY()
-	
 protected:
 
 	UPROPERTY(EditAnywhere)
@@ -45,6 +44,22 @@ protected:
 		class USoundBase* WaterSound;
 	UPROPERTY(EditAnywhere)
 		class UNiagaraSystem* WaterParticle;
+
+	UPROPERTY(EditAnywhere)
+		class USoundBase* WoodSound;
+	UPROPERTY(EditAnywhere)
+		class UNiagaraSystem* WoodParticle;
+
+	UPROPERTY(EditAnywhere)
+		class USoundBase* SandSound;
+	UPROPERTY(EditAnywhere)
+		class UNiagaraSystem* SandParticle;
+
+	UPROPERTY(EditAnywhere)
+		class USoundBase* DirtSound;
+	UPROPERTY(EditAnywhere)
+		class UNiagaraSystem* DirtParticle;
+
 
 	UPROPERTY(EditAnywhere)
 		FName SocketName;
