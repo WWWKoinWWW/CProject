@@ -38,6 +38,9 @@ protected:
 	/// </summary>
 	UFUNCTION()
 		void OnLockOnWigetPosUpdateEvent(AActor* Target);
+
+	UFUNCTION()
+		void OnEndLockOnEvent();
 public:
 	UMainWidget* GetMainWidget() { return MainWidget; }
 };

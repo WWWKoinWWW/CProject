@@ -19,12 +19,20 @@ ULockOnComponent::ULockOnComponent()
 }
 
 
+void ULockOnComponent::OnEndLockOnEvent()
+{
+	SetComponentTickEnabled(false);
+	ClearLockOnActors();
+}
+
 // Called when the game starts
 void ULockOnComponent::BeginPlay()
 {
 	Super::BeginPlay();
 
 	SetComponentTickEnabled(false);
+
+	//OnEndLockOn.Add(&ULockOnComponent::OnEndLockOnEvent);@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
 
 	// ...
 	Player = GetOwner<APlayerCharacter>();
@@ -94,6 +102,25 @@ void ULockOnComponent::SortLockOnableActors()
 		{
 			return Player->GetDistanceTo(&fst) > Player->GetDistanceTo(&sec);
 		});
+
+	// 일정거리 이상 멀어진 대상을 제거
+	for (auto i = 0; i < LockOnableActors_Sort.Num(); i++)
+	{
+		auto Target = LockOnableActors_Sort[i];
+		if (Player->GetDistanceTo(LockOnableActors_Sort[i]) >= 1500.0f)
+		{
+			LockOnableActors_Sort.RemoveAt(i);
+			LockOnableActors.Remove(Target);
+
+			if (Target == LockOnTarget)
+			{
+				if (LockOnableActors.Num() > 0)
+				{
+					SetNextLockOnTarket();
+				}
+			}
+		}
+	}
 }
 
 void ULockOnComponent::CameraLookAtTarget()
@@ -156,7 +183,7 @@ void ULockOnComponent::ClearLockOnActors()
 {
 	LockOnableActors.Empty();
 	LockOnableActors_Sort.Empty();
-
+	LockOnTarget = nullptr;
 }
 
 

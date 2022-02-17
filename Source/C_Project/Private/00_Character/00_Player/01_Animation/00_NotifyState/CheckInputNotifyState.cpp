@@ -43,6 +43,7 @@ void UCheckInputNotifyState::BranchingPointNotifyEnd(FBranchingPointNotifyPayloa
 		{
 			if (Player->GetStatusComponent()->CheckSP(25.f)) {
 				Player->GetStatusComponent()->AddSP(-25.f);
+				Player->LookAtLockOnTarget();
 				BranchingPointPayload.SkelMeshComponent->GetAnimInstance()->Montage_JumpToSection(NextSection);
 				return;
 			}

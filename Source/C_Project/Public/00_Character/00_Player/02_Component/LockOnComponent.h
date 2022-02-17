@@ -9,6 +9,7 @@
 
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnTargetLockOn, AActor*, Target);
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnLockOnWigetPosUpdate, AActor*, Target);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnEndLockOn);
 
 
 UCLASS( ClassGroup=(Custom), meta=(BlueprintSpawnableComponent) )
@@ -26,8 +27,16 @@ public:
 	//타겟에게 락온 위젯을 계속 이동시키는 델리게이트 변수입니다.
 	UPROPERTY(BlueprintAssignable)
 		FOnLockOnWigetPosUpdate OnLockOnWigetPosUpdate;
+	//락온이 끝나면 아이콘 삭제용 델리
+	UPROPERTY(BlueprintAssignable)
+		FOnEndLockOn OnEndLockOn;
 	
 protected:
+
+	UFUNCTION()
+		void OnEndLockOnEvent();
+
+
 	// Called when the game starts
 	virtual void BeginPlay() override;
 
@@ -58,13 +67,20 @@ protected:
 	 * @brief 대상이 플레이어와 너무 멀어지면 락온 대상에서 제외합니다.
 	 */
 	UFUNCTION(BlueprintCallable)
-	void SortLockOnableActors();
+		void SortLockOnableActors();
 	/**
 	 * @brief 카메라가 타겟을 바라보게 합니다.
 	 */
 	void CameraLookAtTarget();
 
+
+
 public:	
+
+	AActor* GetLockOnTarget()
+	{
+		return LockOnTarget;
+	};
 
 	void SetNextLockOnTarket();
 	void SetPreLockOnTarget();

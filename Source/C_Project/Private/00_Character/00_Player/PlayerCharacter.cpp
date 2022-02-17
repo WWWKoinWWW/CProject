@@ -148,11 +148,17 @@ void APlayerCharacter::AddControllerYawInput(float Val)
 	{
 		if (Val > 5.0f)
 		{
-			LockOnComponent->SetNextLockOnTarket();
+			if (GetWorldTimerManager().TimerExists(NextLockOnTimerHandle) == false)
+			{
+				GetWorldTimerManager().SetTimer(NextLockOnTimerHandle, LockOnComponent, &ULockOnComponent::SetNextLockOnTarket, 0.2f);
+			}
 		}
 		else if (Val < -5.0f)
 		{
-			LockOnComponent->SetPreLockOnTarget();
+			if (GetWorldTimerManager().TimerExists(PreLockOnTimerHandle) == false)
+			{
+				GetWorldTimerManager().SetTimer(PreLockOnTimerHandle, LockOnComponent, &ULockOnComponent::SetPreLockOnTarget, 0.2f);
+			}
 		}
 	}
 
@@ -203,15 +209,15 @@ void APlayerCharacter::LockOn()
 		CameraBoom->bEnableCameraRotationLag = true;
 
 		LockOnComponent->SetComponentTickEnabled(true);
-		GetCameraBoom()->SetRelativeLocation(FVector(0, 0, 100));
+		//GetCameraBoom()->SetRelativeLocation(FVector(0, 0, 100));
 	}
 	else
 	{
 		CameraBoom->CameraRotationLagSpeed = 10;
 		CameraBoom->bEnableCameraRotationLag = false;
+		//GetCameraBoom()->SetRelativeLocation(FVector(0, 0, 0));
 
-		LockOnComponent->SetComponentTickEnabled(false);
-		GetCameraBoom()->SetRelativeLocation(FVector(0, 0, 0));
+		LockOnComponent->OnEndLockOn.Broadcast();
 	}
 }
 
@@ -285,6 +291,7 @@ void APlayerCharacter::SetActionState(EActionState newState)
 		break;
 	case EActionState::ATTACK:
 		GetMesh()->GetAnimInstance()->Montage_Play(AttackMontage, 1.f, EMontagePlayReturnType::Duration);
+		LookAtLockOnTarget();
 		break;
 	case EActionState::JUMP:
 
@@ -298,6 +305,22 @@ void APlayerCharacter::Jump()
 	if (ActionState == EActionState::NORMAL || ActionState == EActionState::RUN)
 	{
 		Super::Jump();
+	}
+}
+
+void APlayerCharacter::LookAtLockOnTarget()
+{
+	if (bLockOn)
+	{
+		auto Target = LockOnComponent->GetLockOnTarget();
+		if (Target != nullptr)
+		{
+			FRotator Rot = (Target->GetActorLocation() - GetActorLocation()).Rotation();
+			Rot.Pitch = GetActorRotation().Pitch;
+			Rot.Roll = GetActorRotation().Roll;
+
+			SetActorRotation(Rot);
+		}
 	}
 }
 

@@ -28,7 +28,7 @@ void AMainPlayerController::OnPossess(APawn* aPawn)
 
 				player->GetLockOnComponent()->OnTargetLockOn.AddUniqueDynamic(this, &AMainPlayerController::OnTargetLockOnEvent);
 				player->GetLockOnComponent()->OnLockOnWigetPosUpdate.AddUniqueDynamic(this, &AMainPlayerController::OnLockOnWigetPosUpdateEvent);
-
+				player->GetLockOnComponent()->OnEndLockOn.AddUniqueDynamic(this, &AMainPlayerController::OnEndLockOnEvent);
 
 			}
 		}
@@ -53,8 +53,8 @@ void AMainPlayerController::OnTargetLockOnEvent(AActor* Target)
 	if (Target != nullptr) {
 
 		FVector2D ScreenPos;
-		if (ProjectWorldLocationToScreen(Target->GetActorLocation(), ScreenPos)) {
-
+		if (ProjectWorldLocationToScreen(Target->GetActorLocation(), ScreenPos))
+		{
 			LockOnWidget->SetPositionInViewport(ScreenPos);
 			LockOnWidget->SetVisibility(ESlateVisibility::Visible);
 		}
@@ -66,8 +66,20 @@ void AMainPlayerController::OnLockOnWigetPosUpdateEvent(AActor* Target)
 	if (Target != nullptr) {
 
 		FVector2D ScreenPos;
-		if (ProjectWorldLocationToScreen(Target->GetActorLocation(), ScreenPos)) {
+		if (ProjectWorldLocationToScreen(Target->GetActorLocation(), ScreenPos))
+		{
+			ScreenPos.X -= (LockOnWidget->GetDesiredSize().X / 2);
+			ScreenPos.X -= (LockOnWidget->GetDesiredSize().Y / 2);
+
 			LockOnWidget->SetPositionInViewport(ScreenPos);
 		}
+	}
+}
+
+void AMainPlayerController::OnEndLockOnEvent()
+{
+	if (LockOnWidget != nullptr)
+	{
+		LockOnWidget->SetVisibility(ESlateVisibility::Hidden);
 	}
 }

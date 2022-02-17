@@ -90,6 +90,9 @@ protected:
 	*/
 	virtual void AddControllerYawInput(float Val) override;
 
+	FTimerHandle NextLockOnTimerHandle;
+	FTimerHandle PreLockOnTimerHandle;
+
 protected:
 	// APawn interface
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
@@ -123,12 +126,10 @@ public:
 	bool bPressAttack = false;
 	bool bLockOn = false;
 
+	void LookAtLockOnTarget();
 
 protected:
 
 	virtual void PostInitializeComponents() override;
 
 };
-
-
-
